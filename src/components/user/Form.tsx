@@ -3,7 +3,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
+import { supabase } from "@/lib/supabaseClient";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -16,7 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-// 1. Define schema
+// 1. Zod Schema
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
@@ -24,7 +26,7 @@ const formSchema = z.object({
   email: z.string().email({
     message: "Invalid email address.",
   }),
-  phone: z.string().min(2, {
+  phone_number: z.string().min(2, {
     message: "Phone must be at least 2 characters.",
   }),
   gender: z.string().min(2, {
@@ -32,25 +34,39 @@ const formSchema = z.object({
   }),
 });
 
-// 2. Infer form type from schema
 type FormSchemaType = z.infer<typeof formSchema>;
 
+// ✅ Supabase props type define:
+// type UserFormProps = {
+//   supabase: SupabaseClient;
+// };
+
 export default function UserForm() {
-  // 3. Setup react-hook-form with Zod validation
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
       email: "",
-      phone: "",
+      phone_number: "",
       gender: "",
     },
   });
+
   const { reset } = form;
+
   // 4. Submit handler
-  function onSubmit(values: FormSchemaType) {
-    console.log(values);
-    reset();
+  async function onSubmit(values: FormSchemaType) {
+    const { error } = await supabase.from("users").insert([values]);
+
+    if (error) {
+      console.error("Error inserting data:", error.message);
+      toast.error(`Error inserting data: ${error.message}`);
+    } else {
+      // toast(`Data inserted successfully`);
+      toast.success("Data inserted successfully!");
+      console.log("Data inserted successfully:", values);
+      reset(); // ✅ Reset form after submit
+    }
   }
 
   return (
@@ -95,7 +111,7 @@ export default function UserForm() {
         {/* Phone */}
         <FormField
           control={form.control}
-          name="phone"
+          name="phone_number"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Phone Number</FormLabel>
@@ -125,6 +141,7 @@ export default function UserForm() {
         />
 
         <Button type="submit">Submit</Button>
+        <ToastContainer />
       </form>
     </Form>
   );
