@@ -1,8 +1,12 @@
+import UserForm from "@/components/user/Form";
 
-import UserPage from "./user/page";
 
 export default function Home() {
   return (
-   <><UserPage/></>
+    <>
+      <div className="container mx-auto p-5">
+        <UserForm />
+      </div>
+    </>
   );
 }
