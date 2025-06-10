@@ -16,6 +16,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 
 // 1. Zod Schema
@@ -71,7 +78,10 @@ export default function UserForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-8 md:w-1/2  border border-slate-100 shadow p-5 rounded-2xl"
+      >
         {/* Username */}
         <FormField
           control={form.control}
@@ -125,7 +135,7 @@ export default function UserForm() {
         />
 
         {/* Gender */}
-        <FormField
+        {/* <FormField
           control={form.control}
           name="gender"
           render={({ field }) => (
@@ -135,6 +145,34 @@ export default function UserForm() {
                 <Input placeholder="Male/Female/Other" {...field} />
               </FormControl>
               <FormDescription>Please specify your gender.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        /> */}
+
+        {/* Gender */}
+        <FormField
+          control={form.control}
+          name="gender"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Gender</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your gender" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="Male">Male</SelectItem>
+                  <SelectItem value="Female">Female</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                  <SelectItem value="Prefer not to say">
+                    Prefer not to say
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <FormDescription>Please select your gender.</FormDescription>
               <FormMessage />
             </FormItem>
           )}

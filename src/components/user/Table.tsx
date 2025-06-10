@@ -111,7 +111,7 @@ export function UserTable() {
   if (users.length === 0) return <div>No users found</div>;
 
   return (
-    <Table>
+    <Table className="md:w-1/2  border border-slate-100 shadow p-5">
       <TableCaption>A list of users.</TableCaption>
       <TableHeader>
         <TableRow>
