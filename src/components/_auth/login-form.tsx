@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { supabase } from "@/lib/supabaseClient"
-import { toast } from "react-toastify"
+import { toast, ToastContainer } from "react-toastify"
 
 export function LoginForm({
   className,
@@ -22,7 +22,9 @@ export function LoginForm({
   const handleSocialOauth = async (provider: "google" | "github") => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
+      
       options: {
+        
         redirectTo: `${window.location.origin}/user`,
       },
     });
@@ -76,6 +78,7 @@ export function LoginForm({
                 >
                   Login with Google
                 </Button>
+                <ToastContainer/>
               </div>
             </div>
             <div className="mt-4 text-center text-sm">

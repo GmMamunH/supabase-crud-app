@@ -2,13 +2,16 @@
 
 import Loader from "@/components/Loader";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 interface AppUtilsType {
   isLoggedIn: boolean;
   setIsLoggedIn: (state: boolean) => void;
-  setAuthToken: (state: null) => void;
-  userProfile: null;
-  setUserProfile: (state: null) => void;
+  authToken: string | null;
+  setAuthToken: (state: string | null) => void;
+  userProfile: any;
+  setUserProfile: (state: any) => void;
+  isLoading: boolean;
   setIsLoading: (state: boolean) => void;
 }
 
@@ -20,18 +23,44 @@ export const AppUtilsProvider = ({
   children: React.ReactNode;
 }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [authToken, setAuthToken] = useState<null | string>(null);
-  const [userProfile, setUserProfile] = useState<null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [authToken, setAuthToken] = useState<string | null>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true); // default true
 
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    const userProfile = localStorage.getItem("user_profile");
-    if (token) {
-      setAuthToken(token);
-      setIsLoggedIn(true);
-      setUserProfile(JSON.parse(userProfile));
-    }
+    const checkSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (data.session) {
+        setAuthToken(data.session.access_token);
+        setIsLoggedIn(true);
+        localStorage.setItem("access_token", data.session.access_token);
+      } else {
+        setAuthToken(null);
+        setIsLoggedIn(false);
+        localStorage.removeItem("access_token");
+      }
+      setIsLoading(false);
+    };
+
+    checkSession();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session?.access_token) {
+          setAuthToken(session.access_token);
+          setIsLoggedIn(true);
+          localStorage.setItem("access_token", session.access_token);
+        } else {
+          setAuthToken(null);
+          setIsLoggedIn(false);
+          localStorage.removeItem("access_token");
+        }
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   return (
@@ -42,6 +71,7 @@ export const AppUtilsProvider = ({
         setIsLoggedIn,
         userProfile,
         setUserProfile,
+        isLoading,
         setIsLoading,
       }}
     >
@@ -50,7 +80,7 @@ export const AppUtilsProvider = ({
   );
 };
 
-export const myAppHook = () => {
+export const useAppHook = () => {
   const context = useContext(AppUtilsContext);
   if (!context) {
     throw new Error(

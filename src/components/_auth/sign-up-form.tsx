@@ -47,9 +47,7 @@ export function SignUpForm({
                 <Button type="submit" className="w-full">
                   Signup
                 </Button>
-                <Button variant="outline" className="w-full">
-                  Signup with Google
-                </Button>
+            
               </div>
             </div>
             <div className="mt-4 text-center text-sm">

@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
-import { myAppHook } from "@/app/context/AppUtils";
-import { toast } from "react-toastify";
+import { useAppHook } from "@/app/context/AppUtils";
+import { toast, ToastContainer } from "react-toastify";
 
 const Navbar = () => {
-  const { isLoggedIn, setIsLoggedIn, setAuthToken } = myAppHook();
+  const { isLoggedIn, setIsLoggedIn, setAuthToken } = useAppHook();
   const router = useRouter();
 
   const handleUserLogout = async () => {
@@ -32,7 +32,7 @@ const Navbar = () => {
               <div className="ms-auto">
                 <Link
                   className="me-3 text-gray-700 text-decoration-none"
-                  href="/dashboard"
+                  href="/user"
                 >
                   Dashboard
                 </Link>
@@ -45,6 +45,7 @@ const Navbar = () => {
                 <button className="btn btn-danger" onClick={handleUserLogout}>
                   Logout
                 </button>
+                <ToastContainer/>
               </div>
             ) : (
               <div className="ms-auto">

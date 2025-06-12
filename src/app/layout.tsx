@@ -15,9 +15,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body >
+      <body>
         <AppUtilsProvider>
-          {/* <Toaster /> */}
           <Navbar />
           {children}
         </AppUtilsProvider>
