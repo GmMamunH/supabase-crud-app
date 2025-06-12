@@ -1,5 +1,5 @@
-import UserForm from "@/components/user/Form";
-import { UserTable } from "@/components/user/Table";
+import UserForm from "@/components/_user/Form";
+import { UserTable } from "@/components/_user/Table";
 
 export default function UserPage() {
   return (
