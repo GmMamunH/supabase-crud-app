@@ -1,3 +1,8 @@
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,55 +13,273 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import Link from "next/link";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { supabase } from "@/lib/supabaseClient";
+import { useAppHook } from "@/app/context/AppUtils";
+import { useRouter } from "next/navigation";
+
+// Zod Validation Schema
+const formSchema = z
+  .object({
+    username: z
+      .string()
+      .min(2, { message: "Name must be at least 2 characters." }),
+    email: z.string().email({ message: "Invalid email address." }),
+    phone: z
+      .string()
+      .min(11, { message: "Phone must be at least 11 characters." }),
+    gender: z.string().min(2, { message: "Select gender" }),
+    password: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters." }),
+    confirm_password: z.string().min(8, { message: "Password didn't match" }),
+  })
+  .refine((data) => data.password === data.confirm_password, {
+    message: "Passwords do not match",
+    path: ["confirm_password"],
+  });
+
+type FormSchemaType = z.infer<typeof formSchema>;
 
 export function SignUpForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const router = useRouter();
+  const { setIsLoading } = useAppHook();
+  const form = useForm<FormSchemaType>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: "",
+      email: "",
+      phone: "",
+      gender: "",
+      password: "",
+      confirm_password: "",
+    },
+  });
+
+  // const { reset } = form;
+
+  // const onSubmit = async (values: FormSchemaType) => {
+
+  //   console.log("Data inserted successfully:", values);
+
+  //   setIsLoading(true);
+  //   const { username, email, password, gender, phone } = values;
+
+  //   // Step 1: Supabase Auth Sign Up
+  //   const { data, error } = await supabase.auth.signUp({
+  //     email,
+  //     password,
+  //   });
+
+  //   if (error) {
+  //     toast.error(`Sign up failed: ${error.message}`);
+  //     setIsLoading(false);
+  //     return;
+  //   }
+
+  //   // Step 2: Insert into 'profiles' table
+  //   const { error: profileError } = await supabase.from("profiles").insert([
+  //     {
+  //       id: data.user?.id, // Must match auth user ID
+  //       username,
+  //       gender,
+  //       phone,
+  //     },
+  //   ]);
+
+  //   if (profileError) {
+  //     toast.error(`Profile creation failed: ${profileError.message}`);
+  //   } else {
+  //     toast.success("User registered successfully");
+  //     reset();
+  //     router.push("/sign-in"); // redirect to sign-in page
+  //   }
+
+  //   setIsLoading(false);
+  // };
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log(values);
+    setIsLoading(true);
+    const { username, email, password, gender, phone } = values;
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          username,
+          gender,
+          phone,
+        },
+      },
+    });
+
+    if (error) {
+      toast.error("Failed to register user");
+    } else {
+      toast.success("User registered successfully");
+      setIsLoading(false);
+      router.push("/sign-in");
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle>Signup to your account</CardTitle>
           <CardDescription>
-            Enter your email below to signup to your account
+            Enter your details to create an account.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              {/* Name and Email */}
+              <div className="flex gap-2 items-center">
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your name" {...field} />
+                      </FormControl>
+                      <FormDescription>Public display name.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="email@example.com" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        Your active email address.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
-              <div className="grid gap-3">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                 
-                </div>
-                <Input id="password" type="password" required />
+
+              {/* Phone and Gender */}
+              <div className="flex gap-2 items-center">
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone Number</FormLabel>
+                      <FormControl>
+                        <Input placeholder="+8801XXXXXXXXX" {...field} />
+                      </FormControl>
+                      <FormDescription>Your contact number.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Gender</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select gender" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Male">Male</SelectItem>
+                          <SelectItem value="Female">Female</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                          <SelectItem value="Prefer not to say">
+                            Prefer not to say
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>Select your gender.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-              <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
-                  Signup
-                </Button>
-            
+
+              {/* Password and Confirm Password */}
+              <div className="flex gap-2 items-center">
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="********"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>At least 8 characters.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="confirm_password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Confirm Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="********"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>Re-type your password.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-            </div>
-            <div className="mt-4 text-center text-sm">
-              Already have an account?{" "}
-              <Link href="/sign-in" className="underline underline-offset-4">
-                Sign in
-              </Link>
-            </div>
-          </form>
+
+              <Button type="submit">Register</Button>
+              <ToastContainer />
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>
