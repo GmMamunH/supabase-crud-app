@@ -76,48 +76,6 @@ export function SignUpForm({
     },
   });
 
-  // const { reset } = form;
-
-  // const onSubmit = async (values: FormSchemaType) => {
-
-  //   console.log("Data inserted successfully:", values);
-
-  //   setIsLoading(true);
-  //   const { username, email, password, gender, phone } = values;
-
-  //   // Step 1: Supabase Auth Sign Up
-  //   const { data, error } = await supabase.auth.signUp({
-  //     email,
-  //     password,
-  //   });
-
-  //   if (error) {
-  //     toast.error(`Sign up failed: ${error.message}`);
-  //     setIsLoading(false);
-  //     return;
-  //   }
-
-  //   // Step 2: Insert into 'profiles' table
-  //   const { error: profileError } = await supabase.from("profiles").insert([
-  //     {
-  //       id: data.user?.id, // Must match auth user ID
-  //       username,
-  //       gender,
-  //       phone,
-  //     },
-  //   ]);
-
-  //   if (profileError) {
-  //     toast.error(`Profile creation failed: ${profileError.message}`);
-  //   } else {
-  //     toast.success("User registered successfully");
-  //     reset();
-  //     router.push("/sign-in"); // redirect to sign-in page
-  //   }
-
-  //   setIsLoading(false);
-  // };
-
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(values);
     setIsLoading(true);
@@ -276,7 +234,9 @@ export function SignUpForm({
                 />
               </div>
 
-              <Button type="submit">Register</Button>
+              <Button type="submit" className="w-full">
+                Register
+              </Button>
               <ToastContainer />
             </form>
           </Form>
