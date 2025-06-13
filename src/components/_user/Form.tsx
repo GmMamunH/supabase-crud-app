@@ -177,8 +177,10 @@ export default function UserForm() {
             </FormItem>
           )}
         />
-
-        <Button type="submit">Submit</Button>
+        {/* Submit Button */}
+        <Button type="submit" className="w-full">
+          Submit
+        </Button>
         <ToastContainer />
       </form>
     </Form>

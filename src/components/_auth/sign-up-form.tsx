@@ -97,6 +97,8 @@ export function SignUpForm({
     } else {
       toast.success("User registered successfully");
       setIsLoading(false);
+      await supabase.auth.signOut();
+
       router.push("/sign-in");
     }
   };

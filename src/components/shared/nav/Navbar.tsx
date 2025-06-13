@@ -42,10 +42,13 @@ const Navbar = () => {
                 >
                   Profile
                 </Link>
-                <button className="btn btn-danger" onClick={handleUserLogout}>
+                <button
+                  className="bg-red-800 py-1 px-2 rounded-full text-amber-50"
+                  onClick={handleUserLogout}
+                >
                   Logout
                 </button>
-                <ToastContainer/>
+                <ToastContainer />
               </div>
             ) : (
               <div className="ms-auto">
@@ -64,7 +67,7 @@ const Navbar = () => {
               </div>
             )}
           </div>
-        </div>
+        </div> 
       </nav>
     </>
   );
