@@ -13,11 +13,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
-import { supabase } from "@/lib/supabaseClient";
 import { toast, ToastContainer } from "react-toastify";
-import { useRouter } from "next/navigation";
-import { useAppHook } from "@/app/context/AppUtils";
+import "react-toastify/dist/ReactToastify.css";
 import {
   Form,
   FormControl,
@@ -26,14 +23,38 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { supabase } from "@/lib/supabaseClient";
+import { useAppHook } from "@/app/context/AppUtils";
+import { useRouter } from "next/navigation";
 
-const formSchema = z.object({
-  email: z.string().email({ message: "Invalid email address." }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters." }),
-});
+// Zod Validation Schema
+const formSchema = z
+  .object({
+    username: z
+      .string()
+      .min(2, { message: "Name must be at least 2 characters." }),
+    email: z.string().email({ message: "Invalid email address." }),
+    phone: z
+      .string()
+      .min(11, { message: "Phone must be at least 11 characters." }),
+    gender: z.string().min(2, { message: "Select gender" }),
+    password: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters." }),
+    confirm_password: z.string().min(8, { message: "Password didn't match" }),
+  })
+  .refine((data) => data.password === data.confirm_password, {
+    message: "Passwords do not match",
+    path: ["confirm_password"],
+  });
 
 type FormSchemaType = z.infer<typeof formSchema>;
 
@@ -43,84 +64,181 @@ export function SignUpForm({
 }: React.ComponentProps<"div">) {
   const router = useRouter();
   const { setIsLoading } = useAppHook();
-
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      username: "",
       email: "",
+      phone: "",
+      gender: "",
       password: "",
+      confirm_password: "",
     },
   });
 
-  const onSubmit = async (values: FormSchemaType) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log(values);
     setIsLoading(true);
-    const { email, password } = values;
-
+    const { username, email, password, gender, phone } = values;
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          username,
+          gender,
+          phone,
+        },
+      },
     });
 
     if (error) {
       toast.error("Failed to register user");
     } else {
-      await supabase.auth.signOut(); // ✅ Auto-login বন্ধ করলাম
+      await supabase.auth.signOut();
       toast.success("User registered successfully");
-      router.push("/sign-in"); // Sign In Page এ redirect
+      setIsLoading(false);
+      router.push("/sign-in");
     }
-    setIsLoading(false);
   };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle>Create an account</CardTitle>
-          <CardDescription>Fill the form to sign up</CardDescription>
+          <CardTitle>Signup to your account</CardTitle>
+          <CardDescription>
+            Enter your details to create an account.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="email@example.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="********"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* Name and Email */}
+              <div className="flex gap-2 items-center">
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your name" {...field} />
+                      </FormControl>
+                      <FormDescription>Public display name.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="email@example.com" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        Your active email address.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Phone and Gender */}
+              <div className="flex gap-2 items-center">
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone Number</FormLabel>
+                      <FormControl>
+                        <Input placeholder="+8801XXXXXXXXX" {...field} />
+                      </FormControl>
+                      <FormDescription>Your contact number.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Gender</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select gender" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Male">Male</SelectItem>
+                          <SelectItem value="Female">Female</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                          <SelectItem value="Prefer not to say">
+                            Prefer not to say
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>Select your gender.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Password and Confirm Password */}
+              <div className="flex gap-2 items-center">
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="********"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>At least 8 characters.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="confirm_password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Confirm Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="********"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>Re-type your password.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <Button type="submit" className="w-full">
-                Sign Up
+                Register
               </Button>
               <ToastContainer />
-              <div className="mt-4 text-center text-sm">
-                Already have an account?{" "}
-                <Link href="/sign-in" className="underline">
-                  Sign In
-                </Link>
-              </div>
             </form>
           </Form>
         </CardContent>
