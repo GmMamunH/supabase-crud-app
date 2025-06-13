@@ -1,11 +1,9 @@
 "use client";
 
-import { myAppHook } from "@/app/context/AppUtils";
-
-
+import { useAppHook } from "@/app/context/AppUtils";
 
 export default function Profile() {
-  const { userProfile } = myAppHook();
+  const { userProfile } = useAppHook();
 
   return (
     <>
@@ -15,20 +13,17 @@ export default function Profile() {
           <h2>Profile</h2>
           <div className="card p-4 shadow-sm">
             <p>
-              {/* <strong>Name:</strong> {userProfile?.name} */}
-              mamun
+              <strong>Name:</strong> {userProfile?.name}
             </p>
             <p>
-              {/* <strong>Email:</strong> {userProfile?.email}{" "} */}
-              mamun@gmail.com
+              <strong>Email:</strong> {userProfile?.email}
             </p>
             <p>
-              {/* <strong>Phone:</strong> {userProfile?.phone} */}
-              01406566242
+              <strong>Phone:</strong> {userProfile?.phone}
             </p>
             <p>
-              {/* <strong>Gender:</strong> {userProfile?.gender} */}
-              male
+              <strong>Gender:</strong> {userProfile?.gender}
+            
             </p>
           </div>
         </div>
