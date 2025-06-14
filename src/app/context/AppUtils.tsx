@@ -25,11 +25,11 @@ export const AppUtilsProvider = ({
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [authToken, setAuthToken] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true); // default true
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
+      const { data } = await supabase.auth.getSession();
       if (data.session) {
         setAuthToken(data.session.access_token);
         setIsLoggedIn(true);
@@ -69,6 +69,7 @@ export const AppUtilsProvider = ({
         isLoggedIn,
         setAuthToken,
         setIsLoggedIn,
+        authToken, // ✅ Must include this
         userProfile,
         setUserProfile,
         isLoading,

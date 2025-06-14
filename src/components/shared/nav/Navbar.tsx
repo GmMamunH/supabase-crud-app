@@ -30,12 +30,12 @@ const Navbar = () => {
 
             {isLoggedIn ? (
               <div className="ms-auto">
-                <Link
+                {/* <Link
                   className="me-3 text-gray-700 text-decoration-none"
                   href="/user"
                 >
                   users
-                </Link>
+                </Link> */}
                 <Link
                   className="me-3 text-gray-700 text-decoration-none"
                   href="/dashboard"

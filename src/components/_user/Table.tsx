@@ -43,10 +43,10 @@ export function UserTable() {
 
       if (error) throw error;
       setUsers(data || []);
-    } catch (err) {
-      setError(err.message);
+    } catch (error) {
+      setError("Error fetching users");
       toast.error("Error fetching users");
-      console.error(err);
+      console.error(error);
     } finally {
       setLoading(false);
     }

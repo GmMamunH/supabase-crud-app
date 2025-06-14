@@ -26,8 +26,8 @@ import {
 interface ProductType {
   id?: number;
   title: string;
-  content?: string;
-  cost?: string;
+  content: string;
+  cost: string;
   banner_image?: string | File | null;
 }
 
@@ -58,7 +58,7 @@ export default function Dashboard() {
     setValue,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<ProductType>({
     resolver: yupResolver(formSchema),
   });
 
@@ -68,7 +68,7 @@ export default function Dashboard() {
 
       if (error || !data.session) {
         toast.error("Failed to get user data");
-        router.push("/login");
+        router.push("/sign-in");
         return;
       }
 
@@ -120,15 +120,16 @@ export default function Dashboard() {
       .publicUrl;
   };
 
-  const onFormSubmit = async (formData: any) => {
-    console.log("Form submitted with data:", formData);
-    
+  const onFormSubmit = async (formData: ProductType) => {
     setIsLoading(true);
     let imagePath = formData.banner_image;
 
     if (formData.banner_image instanceof File) {
       imagePath = await uploadImageFile(formData.banner_image);
-      if (!imagePath) return;
+      if (!imagePath) {
+        setIsLoading(false);
+        return;
+      }
     }
 
     if (editId) {
@@ -170,10 +171,11 @@ export default function Dashboard() {
   };
 
   const handleEditData = (product: ProductType) => {
-    setValue("title", product?.title);
-    setValue("content", product?.content);
-    setValue("cost", product?.cost);
-    setValue("banner_image", product?.banner_image);
+    setValue("title", product?.title ?? "");
+    setValue("content", product?.content ?? "");
+    setValue("cost", product?.cost ?? "");
+    // Manually cast as string because banner_image can be string | File | null
+    setValue("banner_image", product?.banner_image as string);
     setPreviewImage(product?.banner_image as string);
     setEditId(product?.id!);
   };
