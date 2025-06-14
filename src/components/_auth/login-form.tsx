@@ -148,23 +148,25 @@ export function LoginForm({
                 <Button type="submit" className="w-full">
                   Login
                 </Button>
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => handleSocialOauth("google")}
-                >
-                  Login with Google
-                </Button>
-                <ToastContainer />
-              </div>
-              <div className="mt-4 text-center text-sm">
-                Don&apos;t have an account?{" "}
-                <Link href="/sign-up" className="underline">
-                  Sign Up
-                </Link>
               </div>
             </form>
           </Form>
+          <div className="mt-6 flex flex-col gap-4">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => handleSocialOauth("google")}
+            >
+              Login with Google
+            </Button>
+            <ToastContainer />
+            <div className="text-center text-sm">
+              Don&apos;t have an account?{" "}
+              <Link href="/sign-up" className="underline">
+                Sign Up
+              </Link>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
