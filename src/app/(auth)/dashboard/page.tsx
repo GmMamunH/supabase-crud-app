@@ -111,6 +111,12 @@ export default function Dashboard() {
       .from("product-image")
       .upload(fileName, file);
 
+      console.log(
+        "Upload Data: ", data,
+        "Upload Error: ", error
+      );
+      
+
     if (error) {
       toast.error("Failed to upload banner image");
       return null;
@@ -138,9 +144,11 @@ export default function Dashboard() {
         .update({ ...formData, banner_image: imagePath })
         .match({ id: editId, user_id: userId });
 
-      error
-        ? toast.error("Failed to update product data")
-        : toast.success("Product has been updated successfully");
+      if (error) {
+        toast.error("Failed to update product data");
+      } else {
+        toast.success("Product has been updated successfully");
+      }
     } else {
       const { error } = await supabase.from("products").insert({
         ...formData,
@@ -148,9 +156,11 @@ export default function Dashboard() {
         banner_image: imagePath,
       });
 
-      error
-        ? toast.error("Failed to Add Product")
-        : toast.success("Successfully Product has been created!");
+      if (error) {
+        toast.error("Failed to Add Product");
+      } else {
+        toast.success("Successfully Product has been created!");
+      }
 
       reset();
     }
@@ -177,7 +187,11 @@ export default function Dashboard() {
     // Manually cast as string because banner_image can be string | File | null
     setValue("banner_image", product?.banner_image as string);
     setPreviewImage(product?.banner_image as string);
-    setEditId(product?.id!);
+    if (product?.id !== undefined && product?.id !== null) {
+      setEditId(product.id);
+    } else {
+      setEditId(null);
+    }
   };
 
   const handleDeleteProduct = (id: number) => {
@@ -196,9 +210,11 @@ export default function Dashboard() {
           user_id: userId,
         });
 
-        error
-          ? toast?.error("Failed to delete product")
-          : toast?.success("Product deleted successfully");
+        if (error) {
+          toast?.error("Failed to delete product");
+        } else {
+          toast?.success("Product deleted successfully");
+        }
 
         fetchProductsFromTable(userId!);
       }
