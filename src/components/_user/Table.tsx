@@ -73,7 +73,9 @@ export function UserTable() {
     setEditForm({ ...user });
   };
 
-  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEditChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setEditForm((prev) => ({ ...prev, [name]: value }));
   };
@@ -169,7 +171,7 @@ export function UserTable() {
                 <select
                   name="gender"
                   value={editForm.gender || ""}
-                  onChange={(e) => handleEditChange(e as any)} 
+                  onChange={handleEditChange}
                   className="border rounded px-2 py-1 w-full"
                 >
                   <option value="Male">Male</option>
