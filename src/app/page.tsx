@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 interface ProductType {
   id: number;
@@ -59,6 +60,7 @@ export default function HomePage() {
                     alt={product.title}
                     width={300}
                     height={200}
+                    priority
                     className="rounded-md object-cover w-full h-48"
                   />
                 )}
@@ -74,6 +76,9 @@ export default function HomePage() {
                   </span>{" "}
                   {product.content}
                 </p>
+                <Button variant="outline" className="w-full">
+                  Add to Cart
+                </Button>
               </CardContent>
             </Card>
           ))}
