@@ -49,7 +49,7 @@ export function ForgetPasswordForm({
     setIsSubmitting(true);
     const { email } = values;
 
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`, // You can handle this route for new password set
     });
 

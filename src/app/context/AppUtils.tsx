@@ -4,13 +4,27 @@ import Loader from "@/components/Loader";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
+// interface UserProfile {
+//   id: string;
+//   email: string;
+//   // Add other fields as needed based on your user profile structure
+// }
+
+export type UserProfile = {
+  id: string;
+  name: string; // Added name property
+  email: string;
+  phone?: string;
+  gender?: string;
+};
+
 interface AppUtilsType {
   isLoggedIn: boolean;
   setIsLoggedIn: (state: boolean) => void;
   authToken: string | null;
   setAuthToken: (state: string | null) => void;
-  userProfile: any;
-  setUserProfile: (state: any) => void;
+  userProfile: UserProfile | null;
+  setUserProfile: (state: UserProfile | null) => void;
   isLoading: boolean;
   setIsLoading: (state: boolean) => void;
 }
@@ -24,7 +38,7 @@ export const AppUtilsProvider = ({
 }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [authToken, setAuthToken] = useState<string | null>(null);
-  const [userProfile, setUserProfile] = useState<any>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

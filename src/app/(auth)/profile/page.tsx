@@ -13,16 +13,26 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+export type UserProfile = {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  gender?: string;
+};
+
 export default function Profile() {
   const { userProfile, setUserProfile } = useAppHook();
 
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [editedProfile, setEditedProfile] = useState(userProfile);
+  const [editedProfile, setEditedProfile] = useState<UserProfile | null>(userProfile);
 
   const handleEdit = () => {
-    setEditedProfile(userProfile); // pre-fill form with existing data
-    setEditOpen(true);
+    if (userProfile) {
+      setEditedProfile(userProfile); // pre-fill form
+      setEditOpen(true);
+    }
   };
 
   const handleDelete = () => {
@@ -30,12 +40,15 @@ export default function Profile() {
   };
 
   const handleEditSave = () => {
-    setUserProfile(editedProfile); // Update profile context
-    setEditOpen(false);
+    if (editedProfile) {
+      setUserProfile(editedProfile); // Update context
+      setEditOpen(false);
+    }
   };
 
   const handleDeleteConfirm = () => {
-    setUserProfile(null); // remove from context (you can also call API here)
+    setUserProfile(null); // Remove profile from context
+    setEditedProfile(null); // Reset edited profile
     setDeleteOpen(false);
   };
 
@@ -51,22 +64,21 @@ export default function Profile() {
           <CardContent className="space-y-4">
             <p>
               <span className="font-medium text-muted-foreground">Name:</span>{" "}
-              {userProfile?.name}
+              {userProfile.name}
             </p>
             <p>
               <span className="font-medium text-muted-foreground">Email:</span>{" "}
-              {userProfile?.email}
+              {userProfile.email}
             </p>
             <p>
               <span className="font-medium text-muted-foreground">Phone:</span>{" "}
-              {userProfile?.phone}
+              {userProfile.phone || "--"}
             </p>
             <p>
               <span className="font-medium text-muted-foreground">Gender:</span>{" "}
-              {userProfile?.gender}
+              {userProfile.gender || "--"}
             </p>
 
-            {/* Edit and Delete Buttons */}
             <div className="flex justify-between pt-4">
               <Button variant="outline" onClick={handleEdit}>
                 Edit
@@ -87,50 +99,64 @@ export default function Profile() {
           <DialogHeader>
             <DialogTitle>Edit Profile</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>Name</Label>
-              <Input
-                value={editedProfile?.name || ""}
-                onChange={(e) =>
-                  setEditedProfile({ ...editedProfile, name: e.target.value })
-                }
-              />
+          {editedProfile && (
+            <div className="space-y-4">
+              <div>
+                <Label>Name</Label>
+                <Input
+                  value={editedProfile.name}
+                  onChange={(e) =>
+                    setEditedProfile({
+                      ...editedProfile,
+                      name: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <Label>Email</Label>
+                <Input
+                  value={editedProfile.email}
+                  onChange={(e) =>
+                    setEditedProfile({
+                      ...editedProfile,
+                      email: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <Label>Phone</Label>
+                <Input
+                  value={editedProfile.phone || ""}
+                  onChange={(e) =>
+                    setEditedProfile({
+                      ...editedProfile,
+                      phone: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <Label>Gender</Label>
+                <Input
+                  value={editedProfile.gender || ""}
+                  onChange={(e) =>
+                    setEditedProfile({
+                      ...editedProfile,
+                      gender: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button variant="outline" onClick={() => setEditOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleEditSave}>Save</Button>
+              </div>
             </div>
-            <div>
-              <Label>Email</Label>
-              <Input
-                value={editedProfile?.email || ""}
-                onChange={(e) =>
-                  setEditedProfile({ ...editedProfile, email: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <Label>Phone</Label>
-              <Input
-                value={editedProfile?.phone || ""}
-                onChange={(e) =>
-                  setEditedProfile({ ...editedProfile, phone: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <Label>Gender</Label>
-              <Input
-                value={editedProfile?.gender || ""}
-                onChange={(e) =>
-                  setEditedProfile({ ...editedProfile, gender: e.target.value })
-                }
-              />
-            </div>
-            <div className="flex justify-end space-x-2 pt-4">
-              <Button variant="outline" onClick={() => setEditOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleEditSave}>Save</Button>
-            </div>
-          </div>
+          )}
         </DialogContent>
       </Dialog>
 

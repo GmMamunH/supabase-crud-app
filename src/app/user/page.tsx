@@ -14,7 +14,7 @@ export default function UserPage() {
     if (!isLoading && !isLoggedIn) {
       router.push("/sign-in");
     }
-  }, [isLoading, isLoggedIn]);
+  }, [isLoading, isLoggedIn, router]);
 
   if (isLoading) return null; // or a loading spinner
 
