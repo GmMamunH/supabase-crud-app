@@ -1,15 +1,10 @@
+import { Loader2 } from "lucide-react";
+
 const Loader = () => {
   return (
-    <>
-      <div
-        id="loader"
-        className="d-flex justify-content-center align-items-center vh-100"
-      >
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-      </div>
-    </>
+    <div className="flex justify-center items-center min-h-screen">
+      <Loader2 className="w-12 h-12 animate-spin text-primary" />
+    </div>
   );
 };
 

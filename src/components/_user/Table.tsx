@@ -169,7 +169,7 @@ export function UserTable() {
                 <select
                   name="gender"
                   value={editForm.gender || ""}
-                  onChange={(e) => handleEditChange(e as any)}
+                  onChange={(e) => handleEditChange(e as any)} 
                   className="border rounded px-2 py-1 w-full"
                 >
                   <option value="Male">Male</option>
