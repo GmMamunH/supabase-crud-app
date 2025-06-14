@@ -48,7 +48,7 @@ export function LoginForm({
   useEffect(() => {
     if (isLoggedIn && typeof window !== "undefined") {
       if (window.location.pathname === "/sign-in") {
-        router.push("/user");
+        router.push("/dashboard");
       }
     }
   }, [isLoggedIn, router]);
@@ -57,7 +57,7 @@ export function LoginForm({
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/user`,
+        redirectTo: `${window.location.origin}/dashboard`,
       },
     });
     if (error) {

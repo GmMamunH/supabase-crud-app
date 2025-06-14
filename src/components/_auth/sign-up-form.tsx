@@ -77,7 +77,8 @@ export function SignUpForm({
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+   console.log("Form submitted with values:", values);
+   
     setIsLoading(true);
     const { username, email, password, gender, phone } = values;
     const { data, error } = await supabase.auth.signUp({

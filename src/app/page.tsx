@@ -2,14 +2,14 @@
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen ">
       
       {/* Hero Section */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center">
           <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
             <span className="block">Welcome to</span>
-            <span className="block text-primary">AKTA Platform</span>
+            <span className="block text-primary">Supabase CRUD App</span>
           </h1>
           <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
             A modern solution for all your needs. Join us today and experience
@@ -94,7 +94,7 @@ export default function Home() {
       <footer className="bg-white">
         <div className="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
           <p className="text-center text-base text-gray-500">
-            &copy; 2023 AKTA. All rights reserved.
+            &copy; 2025 Supabase CRUD App. All rights reserved.
           </p>
         </div>
       </footer>
