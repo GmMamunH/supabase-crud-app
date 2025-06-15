@@ -4,7 +4,7 @@ import { AppUtilsProvider } from "./context/AppUtils";
 import Navbar from "@/components/shared/nav/Navbar";
 
 export const metadata: Metadata = {
-  title: "Supabase CRUD App",
+  title: "BD24Mart",
   description: "Supabase auth app",
 };
 
