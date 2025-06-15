@@ -64,7 +64,7 @@ export default function Profile() {
           <CardContent className="space-y-4">
             <p>
               <span className="font-medium text-muted-foreground">Name:</span>{" "}
-              {userProfile.name}
+              {userProfile.name || "--"}
             </p>
             <p>
               <span className="font-medium text-muted-foreground">Email:</span>{" "}
